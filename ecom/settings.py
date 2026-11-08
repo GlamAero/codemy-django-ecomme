@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
+ENVIRONMENT = os.environ.get('DJANGO_ENV', 'development')
+
 # Load environment variable for localhost:
 #from dotenv import load_dotenv
 #load_dotenv()
@@ -23,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Password for 'postgres' DB:
-DB_PASSWORD_YO = os.environ['DB_PASSWORD_YO']
+# DB_PASSWORD_YO = os.environ['DB_PASSWORD_YO']
 
 # Password for localhost:
-# DB_PASSWORD_YO = os.environ.get('DB_PASSWORD_YO')
+DB_PASSWORD_YO = os.environ.get('DB_PASSWORD_YO')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -35,14 +37,26 @@ DB_PASSWORD_YO = os.environ['DB_PASSWORD_YO']
 SECRET_KEY = 'django-insecure-cwo-09^lp9rqqw70x9vq2gggzk)d^7lz(5boux!ojpjgmpa2h_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://glamossscouture.store', 'glamossscouture.store', 'coreyms-django-ecomme-production.up.railway.app', 'https://coreyms-django-ecomme-production.up.railway.app', 'localhost', 'd919-102-91-4-27.ngrok-free.app']
-CSRF_TRUSTED_ORIGINS = ['https://glamossscouture.store', 'https://coreyms-django-ecomme-production.up.railway.app', 'https://d919-102-91-4-27.ngrok-free.app']
+if ENVIRONMENT == 'production':
+
+    ALLOWED_HOSTS = ['https://glamossscouture.store', 'glamossscouture.store', 'coreyms-django-ecomme-production.up.railway.app', 'https://coreyms-django-ecomme-production.up.railway.app', 'localhost', 'd919-102-91-4-27.ngrok-free.app']
+
+    CSRF_TRUSTED_ORIGINS = ['https://glamossscouture.store', 'https://coreyms-django-ecomme-production.up.railway.app', 'https://d919-102-91-4-27.ngrok-free.app']
+
+else:
+
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        'd919-102-91-4-27.ngrok-free.app'
+    ]
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     'store',
     'cart',
     'payment',
@@ -81,6 +96,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
                 'cart.context_processors.cart'
             ],
         },
@@ -92,16 +108,40 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': DB_PASSWORD_YO, # 'DB_PASSWORD_YO' value is obtained above on this page 
-        'HOST': 'caboose.proxy.rlwy.net',
-        'PORT': '46568',
+
+if ENVIRONMENT == 'production':
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'railway',
+            'USER': 'postgres',
+            'PASSWORD': DB_PASSWORD_YO, # 'DB_PASSWORD_YO' value is obtained above on this page 
+            'HOST': 'caboose.proxy.rlwy.net',
+            'PORT': '46568',
+        }
     }
-}
+
+else:
+    
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql',
+    #         'NAME': 'railway',
+    #         'USER': 'postgres',
+    #         'PASSWORD': 'my_local_password',  # update this for local use
+    #         'HOST': '127.0.0.1',
+    #         'PORT': '5432', # postgres default port assigned to PostgreSQL by the Internet Assigned Numbers Authority (IANA)
+    #     }
+    # }
 
 
 # Password validation
